@@ -19,6 +19,8 @@ def formatDate(ms: int) -> str:
 def getModifiedDate(file: os.DirEntry) -> int:
     return stat(file).st_mtime
 
+# the name of the file is the `startTimeInSeconds.run`.
+# we can chop off run and get the created date. 
 def getCreatedDate(file: os.DirEntry) -> str:
     return formatDate(int(r.name[:-4]))
 
