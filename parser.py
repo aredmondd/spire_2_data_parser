@@ -16,15 +16,20 @@ def isBackupRun(name: string, backupFlag: string) -> bool:
 def formatDate(ms: int) -> str:
     return datetime.fromtimestamp(ms);
 
+def getModifiedDate(file: os.DirEntry) -> int:
+    return stat(file).st_mtime
+
+def getCreatedDate(file: os.DirEntry) -> str:
+    return formatDate(int(r.name[:-4]))
 
 # MAIN FUNCTION # 
-count = 0
+runs = []
+
 for f in scandir(savePath):
     if (not isBackupRun(f.name, backupFlag)):
-        print(formatDate(stat(f).st_mtime))
-        print(stat(f))
-        print(f.name)
-        print()
-        count += 1
-print("Done!", count)
+        runs.append(f)
 
+runs.sort(key=getModifiedDate)
+
+for r in runs:
+    print(getCreatedDate(r))
