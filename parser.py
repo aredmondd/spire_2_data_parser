@@ -4,6 +4,7 @@ from datetime import datetime
 import json
 import pprint
 import datetime as dt
+import matplotlib.pyplot as plt
 
 # 76561198854416655 is my ID
 
@@ -35,11 +36,14 @@ def getCreatedDate(file: os.DirEntry) -> float:
 runs = []
 runsPerCharacter = {'CHARACTER.IRONCLAD': 0, 'CHARACTER.SILENT': 0, 'CHARACTER.REGENT': 0, 'CHARACTER.NECROBINDER': 0, 'CHARACTER.DEFECT': 0}
 
+# sort runs
 for f in scandir(macSavePath):
     if (not isBackupRun(f.name, backupFlag)):
         runs.append(f)
 
 runs.sort(key=getModifiedDate)
+
+# get data about runs
 
 singlePlayerRunCount = 0
 multiPlayerRunCount = 0;
@@ -59,6 +63,7 @@ for r in runs:
         multiPlayerRunCount += 1
 
 
+# results
 print(singlePlayerRunCount)
 print(multiPlayerRunCount)
 print(runsPerCharacter)
