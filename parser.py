@@ -14,7 +14,6 @@ macSavePath = "/Users/aidenredmond/Library/Application Support/SlayTheSpire2/ste
 backupFlag = ".backup"
 jsonData = ['acts', 'build_id', 'game_mode', 'killed_by_encounter', 'killed_by_event', 'map_point_history', 'modifiers', 'platform_type', 'players', 'run_time', 'schema_version', 'seed', 'start_time', 'was_abandoned', 'win']
 characters = ['IRONCLAD', 'SILENT', 'REGENT', 'NECROBINDER', 'DEFECT']
-colors = {'IRONCLAD': '#d53b27', 'SILENT': '#2e7d32', 'REGENT': '#f07c1e', 'NECROBINDER': '#bf5a85', 'DEFECT': '#3873a9'}
 
 # HELPER FUNCTIONS #
 def isBackupRun(name: string, backupFlag: string) -> bool:
@@ -53,7 +52,6 @@ for r in runs:
     file = open(r.path)
     d = json.load(file)
     players = d['players']
-
 
     if (len(players) == 1):
         print(getCreatedDate(file))

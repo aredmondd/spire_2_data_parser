@@ -3,9 +3,10 @@ import numpy as np
 
 plt.style.use('classic')
 
+COLORS = ['#d53b27', '#2e7d32', '#f07c1e', '#bf5a85', '#3873a9']
+
 def drawPie(values):
-    colors = plt.get_cmap('Blues')(np.linspace(0.2, 0.7, len(values)))
     fig, ax = plt.subplots()
-    ax.pie(values, colors=colors, radius=3, center=(4,4), wedgeprops={"linewidth": 1, "edgecolor": "white"}, frame=True)
+    ax.pie(values, colors=COLORS, labels=values, wedgeprops={'linewidth': 2})
     plt.show()
 
