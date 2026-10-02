@@ -7,6 +7,7 @@ import datetime as dt
 import total_pie_chart as pie
 import total_runs as bar
 import CONSTANTS
+import drawLineChart as lineChart
 
 # HELPER FUNCTIONS #
 def isBackupRun(name: string, backupFlag: string) -> bool:
@@ -16,9 +17,6 @@ def isBackupRun(name: string, backupFlag: string) -> bool:
 
 def formatDate(ms: int) -> float:
     return datetime.fromtimestamp(ms);
-
-def getModifiedDate(file: os.DirEntry) -> int:
-    return stat(file).st_mtime
 
 # the name of the file is the `startTimeInSeconds.run`.
 # we can chop off run and get the created date. 
@@ -65,6 +63,29 @@ def getPlaysPerDay(runs):
 
     return dict(sorted(days.items()))
 
+def getWinLossOverTime(runs):
+    ratioPerDay = {}
+    wins = 0
+    losses = 0
+
+    for r in runs:
+        file = open(r.path)
+        d = json.load(file)
+        players = d['players']
+
+        runDate = formatDate(d['start_time']).date()
+
+        if (len(players) == 1):
+            if d['win'] == True:
+                wins += 1
+            else:
+                losses += 1
+
+            ratioPerDay[runDate] = wins / losses * 100
+
+    return ratioPerDay
+
+
 # MAIN FUNCTION # 
 runs = []
 
@@ -73,9 +94,13 @@ for f in scandir(CONSTANTS.SAVE_PATH):
     if (not isBackupRun(f.name, CONSTANTS.BACKUP_FLAG)):
         runs.append(f)
 
-runs.sort(key=getModifiedDate)
+runs.sort(key=getCreatedDate)
 
 days = getPlaysPerDay(runs)
+ratios = getWinLossOverTime(runs)
+
+pprint.pprint(ratios)
 
 bar.drawBarChart(days)
+# lineChart.drawPlot(ratios)
 
