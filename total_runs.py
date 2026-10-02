@@ -14,5 +14,4 @@ def drawBarChart(values, labels):
     # ax.tick_params("x", rotation=45, rotation_mode="xtick", width=2)
     ax.set_title('Number of runs per day')
 
-    plt.show()
-    
+    # plt.show()

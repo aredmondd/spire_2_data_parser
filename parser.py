@@ -6,15 +6,22 @@ import pprint
 import datetime as dt
 import total_pie_chart as pie
 import total_runs as bar
+from enum import Enum
 
 # 76561198854416655 is my ID
 
 # CONSTANTS #
 savePath = "/home/aetos/.local/share/SlayTheSpire2/steam/76561198854416655/profile1/saves/history/"
-macSavePath = "/Users/aidenredmond/Library/Application Support/SlayTheSpire2/steam/76561198854416655/profile1/saves/history"
+# macSavePath = "/Users/aidenredmond/Library/Application Support/SlayTheSpire2/steam/76561198854416655/profile1/saves/history"
 backupFlag = ".backup"
 jsonData = ['acts', 'ascension', 'build_id', 'game_mode', 'killed_by_encounter', 'killed_by_event', 'map_point_history', 'modifiers', 'platform_type', 'players', 'run_time', 'schema_version', 'seed', 'start_time', 'was_abandoned', 'win']
-characters = ['IRONCLAD', 'SILENT', 'REGENT', 'NECROBINDER', 'DEFECT']
+
+class Character(Enum):
+    IRONCLAD = "CHARACTER.IRONCLAD"
+    SILENT = "CHARACTER.SILENT"
+    REGENT = "CHARACTER.REGENT"
+    NECROBINDER = "CHARACTER.NECROBINDER"
+    DEFECT = "CHARACTER.DEFECT"
 
 # HELPER FUNCTIONS #
 def isBackupRun(name: string, backupFlag: string) -> bool:
@@ -40,22 +47,36 @@ def getPlaysPerDay(runs):
 
     diff = abs((startDate - endDate).days)
 
+    for day in range(diff + 1):
+        loopDate = startDate + dt.timedelta(days=day)
+        days[loopDate] = [0,0,0,0,0]
+
     for r in runs:
         file = open(r.path)
         d = json.load(file)
         players = d['players']
 
-        if (len(players) == 1):
-            runDate = formatDate(d['start_time']).date()
-            if (days.get(runDate) != None):
-                days[runDate] += 1
-            else:
-                days[runDate] = 1
+        runDate = formatDate(d['start_time']).date()
 
-    for day in range(diff + 1):
-        loopDate = startDate + dt.timedelta(days=day)
-        if (days.get(loopDate) == None):
-            days[loopDate] = 0
+        if (len(players) == 1):
+            runChar = players[0]['character']
+            dayArray = days[runDate]
+
+            match runChar:
+                case Character.IRONCLAD.value:
+                    dayArray[0] = dayArray[0] + 1
+                case Character.SILENT.value:
+                    dayArray[1] = dayArray[1] + 1
+                case Character.REGENT.value:
+                    dayArray[2] = dayArray[2] + 1
+                case Character.NECROBINDER.value:
+                    dayArray[3] = dayArray[3] + 1
+                case Character.DEFECT.value:
+                    dayArray[4] = dayArray[4] + 1
+                case _:
+                    raise ValueError(runChar, "is not valid")
+
+            days[runDate] = dayArray
 
     return dict(sorted(days.items()))
 
@@ -70,7 +91,6 @@ def getWinsPerDay(runs):
         d = json.load(file)
         players = d['players']
 
-        print('investingating run ', num)
         if (len(players) == 1 and d['win'] == True):
             runDate = formatDate(d['start_time']).date()
             print('win on', runDate, 'as ', players[0]['character'], 'on A', d['ascension'])
@@ -78,11 +98,7 @@ def getWinsPerDay(runs):
                 wins[runDate] += 1
             else:
                 wins[runDate] = 1
-        else:
-            print('was singleplayer?', len(players) == 1, 'was a win?', d['win'])
         num += 1
-
-        print()
 
     return dict(sorted(wins.items()))
 
@@ -93,7 +109,7 @@ runs = []
 runsPerCharacter = {'CHARACTER.IRONCLAD': 0, 'CHARACTER.SILENT': 0, 'CHARACTER.REGENT': 0, 'CHARACTER.NECROBINDER': 0, 'CHARACTER.DEFECT': 0}
 
 # sort runs
-for f in scandir(macSavePath):
+for f in scandir(savePath):
     if (not isBackupRun(f.name, backupFlag)):
         runs.append(f)
 
@@ -105,9 +121,11 @@ singlePlayerRunCount = 0
 multiPlayerRunCount = 0;
 
 days = getPlaysPerDay(runs)
-wins = getWinsPerDay(runs)
+# wins = getWinsPerDay(runs)
+
+pprint.pprint(days)
 # pprint.pprint(json.load(open(runs[0].path)))
-# bar.drawBarChart(days.values(), days.keys())
+bar.drawBarChart(days.values(), days.keys())
 
 
 # for r in runs:
