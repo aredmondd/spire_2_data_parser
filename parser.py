@@ -65,7 +65,6 @@ def getPlaysPerDay(runs):
 
     return dict(sorted(days.items()))
 
-
 # MAIN FUNCTION # 
 runs = []
 
