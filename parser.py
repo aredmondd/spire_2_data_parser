@@ -10,6 +10,12 @@ import CONSTANTS
 import drawLineChart as lineChart
 
 # HELPER FUNCTIONS #
+def getRunJson(run):
+    return json.load(open(run.path))
+
+def isSinglePlayerRun(run):
+    return len(run['players']) == 1
+
 def isBackupRun(name: string, backupFlag: string) -> bool:
     if (name.find(backupFlag) == -1):
         return False
@@ -85,6 +91,32 @@ def getWinLossOverTime(runs):
 
     return ratioPerDay
 
+def getMinMaxDeckSize(runs):
+    data = getRunJson(runs[0])
+
+    firstRunDeckLength = len(data['players'][0]['deck'])
+
+    largest = firstRunDeckLength
+    largestRun = data
+    smallest = firstRunDeckLength
+    smallestRun = data
+
+    for r in runs:
+        data = getRunJson(r)
+
+        if (isSinglePlayerRun(data)):
+            deckLength = len(data['players'][0]['deck'])
+            if (deckLength > largest):
+                largest = deckLength
+                largestRun = data
+            if (deckLength < smallest):
+                smallest = deckLength
+                smallestRun = data
+
+    print(largest)
+    pprint.pprint(largestRun)
+    print(smallest)
+    pprint.pprint(smallestRun)
 
 # MAIN FUNCTION # 
 runs = []
@@ -99,8 +131,8 @@ runs.sort(key=getCreatedDate)
 days = getPlaysPerDay(runs)
 ratios = getWinLossOverTime(runs)
 
-pprint.pprint(ratios)
+getMinMaxDeckSize(runs)
 
-bar.drawBarChart(days)
+# bar.drawBarChart(days)
 # lineChart.drawPlot(ratios)
 
