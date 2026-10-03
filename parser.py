@@ -16,6 +16,9 @@ def getRunJson(run):
 def isSinglePlayerRun(run):
     return len(run['players']) == 1
 
+def isWin(run):
+    return run['win'] == True
+
 def isBackupRun(name: string, backupFlag: string) -> bool:
     if (name.find(backupFlag) == -1):
         return False
@@ -104,7 +107,7 @@ def getMinMaxDeckSize(runs):
     for r in runs:
         data = getRunJson(r)
 
-        if (isSinglePlayerRun(data)):
+        if (isSinglePlayerRun(data) and isWin(data)):
             deckLength = len(data['players'][0]['deck'])
             if (deckLength > largest):
                 largest = deckLength
@@ -118,6 +121,50 @@ def getMinMaxDeckSize(runs):
     print(smallest)
     pprint.pprint(smallestRun)
 
+def getShortestAndLongestRun(runs):
+    data = getRunJson(runs[0])
+
+    firstRunLength = data['run_time']
+
+    shortestRun = firstRunLength
+    shortRunData = data
+    longestRun = firstRunLength
+    longestRunData = data
+
+    for r in runs:
+        data = getRunJson(r)
+
+        if (isSinglePlayerRun(data) and isWin(data)):
+            runLength = data['run_time']
+            if runLength > longestRun:
+                longestRun = runLength
+                longestRunData = data
+            if runLength < shortestRun:
+                shortestRun = runLength
+                shortestRunData = data
+
+    print(shortestRun / 60)
+    print(formatDate(shortRunData['start_time']), shortRunData['players'][0]['character'])
+    print(longestRun / 60)
+    print(formatDate(longestRunData['start_time']), longestRunData['players'][0]['character'])
+
+# def getLongestLossStreak():
+
+# def getLongestWinStreak():
+
+# def mapDeckSize():
+
+def mapRunTime(runs):
+    runTimes = []
+
+    for r in runs:
+        data = getRunJson(r)
+        runTimes.append(formatDate(data['start_time']).time())
+
+    runTimes.sort()
+
+    return runTimes
+
 # MAIN FUNCTION # 
 runs = []
 
@@ -128,11 +175,14 @@ for f in scandir(CONSTANTS.SAVE_PATH):
 
 runs.sort(key=getCreatedDate)
 
-days = getPlaysPerDay(runs)
-ratios = getWinLossOverTime(runs)
+# days = getPlaysPerDay(runs)
+# ratios = getWinLossOverTime(runs)
 
-getMinMaxDeckSize(runs)
+# getMinMaxDeckSize(runs)
+# getShortestAndLongestRun(runs)
 
 # bar.drawBarChart(days)
 # lineChart.drawPlot(ratios)
 
+times = mapRunTime(runs)
+pprint.pprint(times)
