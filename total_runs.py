@@ -60,3 +60,9 @@ def totalRuns(runs):
     for date, plays in runs.items():
         runs[date] = sum(plays)
     return runs
+
+def drawSimpleBarChart(x, y):
+    fig, ax = plt.subplots()
+
+    ax.bar(x, y)
+    plt.show()
